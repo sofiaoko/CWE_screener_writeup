@@ -1,4 +1,4 @@
-Format Challenge:
+# Format Challenge
 
 For the format challenge, there was one executable file to download, and a server was provided. I started by running the "file" and "checksec" commands to get basic information about the executable. The challenge message indicated that ASLR and Canary were on, a so it wouldn't be possible to do a simple buffer overflow and change the return address. Based off the title of the program, I went in the direction of performing a format string attack.
 
