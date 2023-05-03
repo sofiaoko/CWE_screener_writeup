@@ -15,7 +15,7 @@ global = strtol(local_20,(char **)0x0,10);
 
 After researching the "popen" command, I realized that this command was reading the Unix epoch from the command line and storing it into a variable, which I named "seconds." This ultimately was converted to a long int and stored in a variable called "global," which gets passed into a read_in function. Next, I opened the read_in function in Ghidra as well. 
 
-From Ghidra, I used the address of right before the program enters the read_in function as a breakpoint in GDB. At this breakpoint, I could look up the register information and see that the Unix epoch (in seconds) was stored by the program in the eax register. I set an additional breakpoint within the read_in function of right before the read_in function checks to see if the canary is the same. As test input, I inputted a several a's so I could also see where the user input is stored on the stack and how much input it takes to overflow the buffer/canary.
+From Ghidra, I used the address of right before the program enters the read_in function as a breakpoint in GDB. At this breakpoint, I could look up the register information and see that the Unix epoch (in seconds) was stored by the program in the eax register. I set an additional breakpoint within the read_in function of right before a check to see if the canary is the same. As test input, I inputted a several a's so I could also see where the user input is stored on the stack and how much input it takes to overflow the buffer/canary.
 
 <img width="407" alt="canary3" src="https://user-images.githubusercontent.com/97570623/235979072-55a5f762-38d9-4931-becb-cc1563ec8e10.PNG">
 
