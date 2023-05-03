@@ -15,7 +15,7 @@ global = strtol(local_20,(char **)0x0,10);
 
 After researching the "popen" command, I realized that this command was reading the Unix epoch from the command line and storing it into a variable, which I named "seconds." This ultimately was converted to a long int and stored in a variable called "global," which gets passed into a read_in function. Next, I opened the read_in function in Ghidra as well. 
 
-From Ghidra, I used the address of right before the program enters the read_in function as a breakpoint in GDB. At this breakpoint, I could look up the register information and see that the Unix epoch (in seconds) was stored by the program in the eax register. I set an additional breakpoint within the read_in function of right before a check to see if the canary is the same. As test input, I inputted a several a's so I could also see where the user input is stored on the stack and how much input it takes to overflow the buffer/canary.
+From Ghidra, I used the address of right before the program enters the read_in function as a breakpoint in GDB. At this breakpoint, I could look up the register information and see that the Unix epoch (in seconds) was stored by the program in the eax register. I set an additional breakpoint within the read_in function right before a check to see if the canary is the same. As test input, I inputted a several a's so I could also see where the user input is stored on the stack and how much input it takes to overflow the buffer/canary.
 
 <img width="407" alt="canary3" src="https://user-images.githubusercontent.com/97570623/235979072-55a5f762-38d9-4931-becb-cc1563ec8e10.PNG">
 
@@ -28,8 +28,13 @@ To test this solution before implementing it, I created a short python2 script:
 
 python2 -c 'print("\x61"*44 + "\x69\x69\x4e\x64")' > payload
 
-I ran the program in GDB with a payload file pre-piped in, I checked the Unix epoch time that was stored in the eax register at the first breakpoint, converted it to hexadecimal bytes (little endian), and modified the payload file to write 44 characters and then the Unix epoch time, which should match the canary. Running this payload did not trigger a stack smashing error. At this point, I also needed to find the offset of where the return address was stored on the stack. Looking back at the stack, I saw the return address to main at the address 0x08049413, and from I found the return address of the win function to be 0x8049296. The return address had an offset of 12 from the canary, making the final python script I needed to create:
+I ran the program in GDB with a payload file pre-piped in, I checked the Unix epoch time that was stored in the eax register at the first breakpoint, converted it to hexadecimal bytes (little endian), and modified the payload file to write 44 characters and then the Unix epoch time, which should match the canary. Running this payload did not trigger a stack smashing error. At this point, I also needed to find the offset of where the return address was stored on the stack. Looking back at the stack, I saw the return address to main at the address 0x08049413, and from GDB I also foudn the return address of the win function to be 0x8049296. The main return address had an offset of 12 from the canary, making the final python script I needed to create:
 
 44 Characters + Canary in Hexadecimal + 12 Characters + Return Address of Win Function
 
-Next, I worked on writing python code that could execute at the same time of the program, get the Unix epoch, and print+pipe the output into the program. 
+Next, I worked on writing python code that could execute at the same time of the program, get the Unix epoch, and print+pipe the output into the program.
+
+<img width="426" alt="canary5" src="https://user-images.githubusercontent.com/97570623/236043066-4001a9d7-e84f-49a5-99a9-4486acf9f7fb.PNG">
+
+To receive the flag, I piped the output of this code into the server.
+
