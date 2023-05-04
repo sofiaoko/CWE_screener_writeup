@@ -6,12 +6,13 @@ Based off the title of the challenge, I began with looking for the canary in the
 <img width="400" alt="canary2" src="https://user-images.githubusercontent.com/97570623/235976224-ef5d295c-c386-44ba-914e-4bcf4498ba41.PNG">
 
 I opened the program in Ghidra and began looking at the translated C code to try to get information about the custom canary. I renamed some variables to make it easier to read. The main point of interest within the code were three lines that read: 
-
+```
 seconds = popen("date +%s","r");
 
 fgets(local_20,12,seconds);
 
 global = strtol(local_20,(char **)0x0,10);
+```
 
 After researching the "popen" command, I realized that this command was reading the Unix epoch from the command line and storing it into a variable, which I named "seconds." This ultimately was converted to a long int and stored in a variable called "global," which gets passed into a read_in function. Next, I opened the read_in function in Ghidra as well. 
 
@@ -25,8 +26,9 @@ From Ghidra, I used the address of right before the program enters the read_in f
 If I entered more than 44 characters, the canary would be written into, and I would receive the stack smashing detected message. From this, I determined that the solution to this problem would be to enter 44 characters of regular input, the Unix epoch time from starting the function so that the canary does not change, and then changing the return address to the win function. 
 
 To test this solution before implementing it, I created a short python2 script:
-
+```
 python2 -c 'print("\x61"*44 + "\x69\x69\x4e\x64")' > payload
+```
 
 I ran the program in GDB with a payload file pre-piped in, I checked the Unix epoch time that was stored in the eax register at the first breakpoint, converted it to hexadecimal bytes (little endian), and modified the payload file to write 44 characters and then the Unix epoch time, which should match the canary. Running this payload did not trigger a stack smashing error. At this point, I also needed to find the offset of where the return address was stored on the stack. Looking back at the stack, I saw the return address to main at the address 0x08049413, and from GDB I also foudn the return address of the win function to be 0x8049296. The main return address had an offset of 12 from the canary, making the final python script I needed to create:
 
