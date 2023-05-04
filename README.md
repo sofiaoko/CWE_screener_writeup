@@ -10,5 +10,5 @@ Solved Challenges:
 
 <a href="https://github.com/sofiaoko/CWE_screener_writeup/tree/win">Win</a>
 
-<a href="https://github.com/sofiaoko/CWE_screener_writeup/tree/array-sort">Win</a>
+<a href="https://github.com/sofiaoko/CWE_screener_writeup/tree/array-sort">Array Sort</a>
 
