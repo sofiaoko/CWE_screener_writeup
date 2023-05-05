@@ -13,3 +13,5 @@ Solved Challenges:
 <a href="https://github.com/sofiaoko/CWE_screener_writeup/tree/array-sort">Array Sort</a>
 
 <a href="https://github.com/sofiaoko/CWE_screener_writeup/tree/closest">Closest</a>
+
+<a href="https://github.com/sofiaoko/CWE_screener_writeup/tree/list-sort">List Sort</a>
